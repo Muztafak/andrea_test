@@ -1,0 +1,33 @@
+services:
+  test:
+    image: "test:dev"
+    build: .
+    container_name: test
+    restart: "on-failure"
+    depends_on:
+      - mysql-db
+    volumes:
+      - ".:/var/www/html:rw"
+    ports:
+      - "8081:80"
+    tty: true
+    networks:
+      test-network:
+
+  mysql-db:
+    image: 'mysql'
+    restart: "on-failure"
+    container_name: mysql-db
+    environment:
+      MYSQL_ROOT_PASSWORD: 'password'
+    volumes:
+      - "/var/lib/mysql"
+      - "./init.sql:/docker-entrypoint-initdb.d/init.sql"
+    ports:
+      - "13306:3306"
+    networks:
+      test-network:
+
+networks:
+  test-network:
+    name: test-network
